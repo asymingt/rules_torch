@@ -1,0 +1,6 @@
+# The companion modules of @libtorch that are not (yet) in the Bazel Central
+# Registry are served from the bazel_libtorch registry.
+common --registry=https://asymingt.github.io/bazel_libtorch/
+common --registry=https://bcr.bazel.build
+
+try-import %workspace%/user.bazelrc

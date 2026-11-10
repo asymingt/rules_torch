@@ -1,0 +1,5 @@
+# The Bazel build of each supported PyTorch version, one directory per
+# overlay (see //libtorch/private:versions.bzl). BUILD files are stored as
+# BUILD.torch so this stays a single package; the libtorch repository rule
+# renames them when it copies an overlay into @libtorch.
+exports_files(glob(["**"]))

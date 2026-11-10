@@ -1,0 +1,2 @@
+# Sources that @libtorch adds to upstream's (see src/).
+exports_files(glob(["src/*"]))
