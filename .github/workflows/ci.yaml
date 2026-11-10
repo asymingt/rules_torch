@@ -1,0 +1,40 @@
+# Checks that the module and its extension evaluate against the registries in
+# .bazelrc, and that the default @libtorch (libtorch.version() of the newest
+# supported release) analyzes. Compiling LibTorch itself is bazel_libtorch's
+# job (https://github.com/asymingt/bazel_libtorch), whose CI matrix builds and
+# tests @libtorch on every platform with this module.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  bazel:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: bazel-contrib/setup-bazel@104e3eea9447cdaa4b00d0fb46191a3985d26ab3 # 0.19.1
+        with:
+          bazelisk-cache: true
+          repository-cache: true
+
+      - name: Lint
+        run: |
+          curl -fsSL -o buildifier "https://github.com/bazelbuild/buildtools/releases/download/v8.2.1/buildifier-$(uname -s | tr A-Z a-z)-$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')"
+          chmod +x buildifier
+          ./buildifier -mode=check -lint=warn MODULE.bazel BUILD.bazel libtorch/BUILD.bazel libtorch/extensions.bzl libtorch/private/*.bzl libtorch/private/BUILD.bazel
+
+      - name: Build
+        run: bazel build //...
+
+      - name: Analyze @libtorch
+        run: bazel build --nobuild @libtorch//:headeronly @libtorch//:c10

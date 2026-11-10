@@ -30,7 +30,7 @@ Then, in `MODULE.bazel`:
 ```starlark
 bazel_dep(name = "llvm", version = "0.8.25")      # hermetic Clang/libc++ toolchain
 bazel_dep(name = "rules_cuda", version = "0.3.0") # CUDA rules & redistributables
-bazel_dep(name = "rules_torch", version = "0.0.1")
+bazel_dep(name = "rules_torch", version = "0.0.2")
 register_toolchains("@llvm//toolchain:all")
 
 libtorch = use_extension("@rules_torch//libtorch:extensions.bzl", "libtorch")
@@ -107,3 +107,9 @@ registry overlay), which the
 [ROS Central Registry](https://github.com/openrobotics/ros-central-registry)
 carries. That module is deprecated: swap the `bazel_dep` for the three lines
 above; `@libtorch//...` targets and `--@libtorch//:...` flags are unchanged.
+
+## License
+
+Apache-2.0 (see [LICENSE](LICENSE)). The PyTorch sources that `@libtorch` is
+built from are under PyTorch's own BSD-3-Clause license, which the overlay
+declares with `@rules_license` (`@libtorch//:license`).

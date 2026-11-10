@@ -94,10 +94,11 @@ def _libtorch_impl(mctx):
             overlay = _overlay_label(release),
         )
 
+    non_dev = mctx.root_module_has_non_dev_dependency
     return mctx.extension_metadata(
         reproducible = True,
-        root_module_direct_deps = "all",
-        root_module_direct_dev_deps = [],
+        root_module_direct_deps = ["libtorch"] if non_dev else [],
+        root_module_direct_dev_deps = [] if non_dev else ["libtorch"],
     )
 
 _version_tag = tag_class(

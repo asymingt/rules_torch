@@ -1,6 +1,6 @@
 module(
     name = "rules_torch",
-    version = "0.0.1",
+    version = "0.0.2",
     bazel_compatibility = [">=9.0.0"],
 )
 
@@ -65,4 +65,15 @@ http_archive(
     integrity = "sha256-v29Ws22LyRVuUY6xzDehRihAgvpTUiAz93Ku++z9Ffw=",
     strip_prefix = "typing_extensions-4.12.2",
     urls = ["https://github.com/python/typing_extensions/archive/refs/tags/4.12.2.tar.gz"],
+)
+
+# Development only (ignored by consumers): this module's own @libtorch, from
+# the newest supported release, and the hermetic @llvm toolchain (already a
+# dependency above) registered to analyze it with.
+libtorch = use_extension("//libtorch:extensions.bzl", "libtorch", dev_dependency = True)
+use_repo(libtorch, "libtorch")
+
+register_toolchains(
+    "@llvm//toolchain:all",
+    dev_dependency = True,
 )
