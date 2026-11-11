@@ -1,6 +1,6 @@
 module(
     name = "rules_torch",
-    version = "0.0.2",
+    version = "0.0.3",
     bazel_compatibility = [">=9.0.0"],
 )
 
@@ -17,7 +17,7 @@ bazel_dep(name = "fbgemm", version = "0.0.0-20260514-bf6dce3")
 bazel_dep(name = "flatbuffers", version = "24.12.23")
 bazel_dep(name = "fmt", version = "12.2.0.bcr.1")
 bazel_dep(name = "gflags", version = "2.3.1")
-bazel_dep(name = "glog", version = "0.6.0.bcr.0")
+bazel_dep(name = "glog", version = "0.7.1.bcr.2")
 bazel_dep(name = "gloo", version = "0.0.0-20260610-74cc005")
 bazel_dep(name = "glslang", version = "16.6.0")
 bazel_dep(name = "hip-stub", version = "7.14.1")

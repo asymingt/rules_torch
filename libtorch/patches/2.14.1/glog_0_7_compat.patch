@@ -4,10 +4,13 @@ glog >= 0.7 is incompatible with upstream c10/util/Logging.cpp in two ways:
   std::min(int, LogSeverity) no longer deduces a single type.
 * glog_internal_namespace_::IsGoogleLoggingInitialized no longer exists
   (since glog 0.6); it is the public google::IsGoogleLoggingInitialized().
-  Use it when GLOG_EXPORT (introduced in glog 0.6) is defined.
+  Use it when GLOG_EXPORT (introduced in glog 0.6) is defined. Both
+  c10/util/Logging.cpp and c10/util/Exception.cpp (WarningHandler::process)
+  call it.
 
 Proposed upstream for https://github.com/pytorch/pytorch/issues/58054.
 
+diff --git a/c10/util/Logging.cpp b/c10/util/Logging.cpp
 --- a/c10/util/Logging.cpp
 +++ b/c10/util/Logging.cpp
 @@ -385,21 +385,26 @@
@@ -51,3 +54,37 @@ Proposed upstream for https://github.com/pytorch/pytorch/issues/58054.
  }
  } // namespace c10
  
+diff --git a/c10/util/Exception.cpp b/c10/util/Exception.cpp
+--- a/c10/util/Exception.cpp
++++ b/c10/util/Exception.cpp
+@@ -9,11 +9,13 @@
+ #include <string>
+ #include <utility>
+ 
+-// Google glog's api does not have an external function that allows one to check
+-// if glog is initialized or not. It does have an internal function - so we are
+-// declaring it here. This is a hack but has been used by a bunch of others too
+-// (e.g. Torch, common/init). See also Logging.cpp in this directory.
+-#ifdef C10_USE_GLOG
++// glog >= 0.6 (the first release defining GLOG_EXPORT) has a public
++// google::IsGoogleLoggingInitialized(). Older glog's api does not have an
++// external function that allows one to check if glog is initialized or not. It
++// does have an internal function - so we are declaring it here. This is a hack
++// but has been used by a bunch of others too (e.g. Torch, common/init). See
++// also Logging.cpp in this directory.
++#if defined(C10_USE_GLOG) && !defined(GLOG_EXPORT)
+ namespace google {
+ namespace glog_internal_namespace_ {
+ bool IsGoogleLoggingInitialized();
+@@ -265,7 +267,11 @@
+   // During static initialization (before InitGoogleLogging), glog's global
+   // flags may not be constructed yet. Accessing them causes SIOF crashes
+   // (T253115013, D96553733). Fall back to stderr in that case.
++#if defined(GLOG_EXPORT)
++  if (!::google::IsGoogleLoggingInitialized()) {
++#else
+   if (!::google::glog_internal_namespace_::IsGoogleLoggingInitialized()) {
++#endif
+     std::cerr << warning.source_location().file << ':'
+               << warning.source_location().line
+               << ": Warning: " << warning.msg() << " (function "

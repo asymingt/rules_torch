@@ -24,12 +24,12 @@ LIBTORCH_COPTS = ["-std=gnu++20"]
 # visibility on Linux/macOS and to nothing on Windows, where :c10_shared still
 # exports every symbol (through a generated DEF file, see windows_def_file).
 #
-# C10_USE_GLOG: upstream c10/util/Logging.cpp relies on glog's `int` log
-# severities and the internal glog_internal_namespace_::IsGoogleLoggingInitialized,
-# neither of which holds for glog 0.7. patches/glog_0_7_compat.patch fixes both,
-# calling the public google::IsGoogleLoggingInitialized() for glog >= 0.6. The
-# BCR's glog 0.6.0 does not load in Bazel 9, so the local registry serves a
-# patched glog 0.6.0.bcr.0.
+# C10_USE_GLOG: upstream c10/util/Logging.cpp and c10/util/Exception.cpp rely
+# on glog's `int` log severities and the internal
+# glog_internal_namespace_::IsGoogleLoggingInitialized, neither of which holds
+# for glog 0.7. patches/2.14.1/glog_0_7_compat.patch fixes both, calling the
+# public google::IsGoogleLoggingInitialized() for glog >= 0.6, so @libtorch
+# builds against the BCR's glog 0.7.1.
 _CMAKE_MACROS = {
     "C10_BUILD_SHARED_LIBS": False,
     "C10_USE_GFLAGS": True,

@@ -30,7 +30,7 @@ Then, in `MODULE.bazel`:
 ```starlark
 bazel_dep(name = "llvm", version = "0.8.25")      # hermetic Clang/libc++ toolchain
 bazel_dep(name = "rules_cuda", version = "0.3.0") # CUDA rules & redistributables
-bazel_dep(name = "rules_torch", version = "0.0.2")
+bazel_dep(name = "rules_torch", version = "0.0.3")
 register_toolchains("@llvm//toolchain:all")
 
 libtorch = use_extension("@rules_torch//libtorch:extensions.bzl", "libtorch")
